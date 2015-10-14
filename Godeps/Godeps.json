@@ -1,0 +1,5 @@
+{
+	"ImportPath": "github.com/AlexsJones/deaddrop",
+	"GoVersion": "go1.5.1",
+	"Deps": []
+}

@@ -14,6 +14,8 @@ import (
 
 var databaseConnect gorm.DB
 
+var configuration utils.Configuration 
+
 type incoming_data struct {
   Data string
   Guid string
@@ -54,7 +56,13 @@ func hdeaddrop_get(w http.ResponseWriter, r *http.Request) {
 
 func initialiseDatabase() {
 
-  db, err := gorm.Open("postgres","host=localhost port=5432 user=anon password=anon dbname=development")
+  dbstring := configuration.Json.DBConnectionString
+
+  if os.Getenv("DEADDROP_DBCONNECTIONSTRING") != "" {
+    dbstring = os.Getenv("DEADDROP_DBCONNECTIONSTRING")
+  }
+
+  db, err := gorm.Open(dbstring)
 
   utils.CheckErr(err, "postgres failed")
 
@@ -71,7 +79,6 @@ func initialiseDatabase() {
 }
 func main() {
 
-  var configuration utils.Configuration 
 
   if os.Getenv("DEADDROP_CONF")  != "" {
     configuration = utils.NewConfiguration(os.Getenv("DEADDROP_CONF"))

@@ -7,6 +7,7 @@ import (
 )
 type Json struct {
   Port string
+  DBConnectionString string
 }
 
 type Configuration struct {

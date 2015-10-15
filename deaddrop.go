@@ -62,7 +62,7 @@ func initialiseDatabase() {
     dbstring = os.Getenv("DEADDROP_DBCONNECTIONSTRING")
   }
 
-  db, err := gorm.Open(dbstring)
+  db, err := gorm.Open("postgres",dbstring)
 
   utils.CheckErr(err, "postgres failed")
 
@@ -104,14 +104,14 @@ func main() {
 
   http.Handle("/",rtr)
 
- 
+
   port := configuration.Json.Port
   if os.Getenv("PORT") != "" {
     port = os.Getenv("PORT")  
     log.Print("Using environmental variable for $PORT")
   }
 
- log.Println("Listening...")
+  log.Println("Listening...")
 
   http.ListenAndServe(":" + port ,nil)
 }

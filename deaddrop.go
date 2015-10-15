@@ -14,6 +14,8 @@ import (
 
 var databaseConnect gorm.DB
 
+var port string 
+
 var configuration utils.Configuration 
 
 type incoming_data struct {
@@ -33,12 +35,12 @@ func hdeaddrop_post(w http.ResponseWriter, r *http.Request) {
 
   guid := utils.NewGuid()
 
-  /* Store data in db */
-  i.Guid = guid
+  i.Guid = utils.Hash(guid)
 
   databaseConnect.Create(&i)
 
-  w.Write([]byte("Generating 1 time download link " + "http://" + utils.GetHostnameIpv4() + "/" + guid))
+  w.Write([]byte("Generating 1 time download link " + "http://" +
+  utils.GetHostnameIpv4() + ":" + port +  "/deaddrop/" + i.Guid))
 }
 
 func hdeaddrop_get(w http.ResponseWriter, r *http.Request) {
@@ -77,8 +79,8 @@ func initialiseDatabase() {
   databaseConnect = db
 
 }
-func main() {
 
+func main() {
 
   if os.Getenv("DEADDROP_CONF")  != "" {
     configuration = utils.NewConfiguration(os.Getenv("DEADDROP_CONF"))
@@ -104,8 +106,7 @@ func main() {
 
   http.Handle("/",rtr)
 
-
-  port := configuration.Json.Port
+  port = configuration.Json.Port
   if os.Getenv("PORT") != "" {
     port = os.Getenv("PORT")  
     log.Print("Using environmental variable for $PORT")

@@ -62,20 +62,14 @@ func hdeaddrop_upload(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintln(w, err)
   }
 
-  w.Write([]byte("<html><body>Generating 1 time download code: "+ "<a href='" +
-   "http://silentdrop.io/deaddrop/fetch/" + filenameCipher + 
-   "'>http://silentdrop.io/deaddrop/fetch/" + hashedGuid + 
-    "</a></body></html>"))
+  w.Write([]byte("Generating 1 time download code: "+ hashedGuid))
 
 }
 
 func hdeaddrop_uploadwithId(w http.ResponseWriter, r *http.Request) {
   
-  log.Println("Upload with ID...")
   params := mux.Vars(r)
   id := params["id"]
-
-  log.Println(id)
 
   dirname := "uploads"
   d, err := os.Open(dirname)

@@ -29,15 +29,12 @@ function validateForm() {
         <h1 class="cover-heading">Upload</h1>
         <p class="lead">One time links to files you care about</p>
 
-     
-
-        
             <form enctype="multipart/form-data">
                 <input id="input-id" class="file" type="file" multiple data-min-file-count="1">
             </form>
         
         <h1 class="cover-heading">Retrieve</h1>
-        <p class="lead">Use a one time cipher to retrieve a file</p>
+        <p class="lead">Use a one time cipher to retrieve a file ( max size 9 megs )</p>
 
         <form action="/deaddrop/fetch" name="fetchid" onsubmit="return validateForm()" method="POST">
         
@@ -54,11 +51,25 @@ function validateForm() {
 <script>
 // initialize with defaults
 $("#input-id").fileinput({
-        'uploadUrl': '/deaddrop/upload',
-        'allowedFileExtensions' : ['jpg', 'png','gif'],
-        'maxFileSize': 10000,
-        'maxFilesNum': 1,
-        'elErrorContainer': '#errorBlock'
+        uploadUrl: '/deaddrop/upload',
+        allowedFileExtensions: ['jpg', 'png','gif'],
+        maxFileSize: 10000,
+        maxFilesNum: 1,
+        uploadAsync: false,
+        elErrorContainer: '#errorBlock'
     });
 
+ // CATCH RESPONSE
+$('#input-id').on('filebatchuploaderror', function(event, data, previewId, index) {
+var form = data.form, files = data.files, extra = data.extra, 
+    response = data.response, reader = data.reader;
+
+});
+
+
+$('#input-id').on('filebatchuploadsuccess', function(event, data, previewId, index) {
+   var form = data.form, files = data.files, extra = data.extra, 
+    response = data.response, reader = data.reader;
+    alert (extra.bdInteli + " " +  response.uploaded);
+});
 </script>

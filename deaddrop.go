@@ -23,8 +23,7 @@ var configuration utils.Configuration
 
 func hdeaddrop_upload(w http.ResponseWriter, r *http.Request) {
   
-  if r.ContentLength > (1024 * 10) {
-
+  if r.ContentLength > (1024 * 1024 * 1024) {
       http.Error(w,"request too large", http.StatusExpectationFailed)
       return
   }

@@ -14,11 +14,72 @@ import (
   "io/ioutil"
   "html/template"
   "strings"
+  "mime/multipart"
 )
 
 var port string 
 
 var configuration utils.Configuration 
+
+func UploadHandler(res http.ResponseWriter, req *http.Request) {  
+
+      var (  
+           status int  
+           err  error  
+           guid string
+           hashedGuid string
+      )  
+      defer func() {  
+           if nil != err {  
+                http.Error(res, err.Error(), status)  
+           }  
+      }()  
+      // parse request  
+      const _24K = (1 << 20) * 24  
+      if err = req.ParseMultipartForm(_24K); nil != err {  
+           status = http.StatusInternalServerError  
+           res.Write([]byte(err.Error()))  
+           return  
+      }  
+      for _, fheaders := range req.MultipartForm.File {  
+           for _, hdr := range fheaders {  
+                // open uploaded  
+                var infile multipart.File  
+                if infile, err = hdr.Open(); nil != err {  
+                     status = http.StatusInternalServerError  
+                     res.Write([]byte(err.Error()))  
+                     return  
+                }  
+
+                guid = utils.NewGuid()
+
+                hashedGuid = utils.Hash(guid)
+
+                filenameCipher := hashedGuid + "_" + hdr.Filename
+
+
+
+                // open destination  
+                var outfile *os.File  
+                if outfile, err = os.Create("uploads/" + filenameCipher); nil != err {  
+                     status = http.StatusInternalServerError  
+                     res.Write([]byte(err.Error()))  
+                     return  
+                }  
+                // 32K buffer copy  
+                var written int64  
+                if written, err = io.Copy(outfile, infile); nil != err {  
+                     status = http.StatusInternalServerError  
+                     res.Write([]byte(err.Error()))  
+                     return  
+                }
+                log.Println(written)  
+                res.Write([]byte("Download cipher: " + hashedGuid))
+
+           }  
+      }  
+
+ } 
 
 func hdeaddrop_upload(w http.ResponseWriter, r *http.Request) {
   
@@ -135,7 +196,7 @@ func main() {
 
   rtr.HandleFunc("/deaddrop/fetch", hdeaddrop_fetch).Methods("POST")
 
-  rtr.HandleFunc("/deaddrop/upload",hdeaddrop_upload).Methods("POST")
+  rtr.HandleFunc("/deaddrop/upload",UploadHandler).Methods("POST")
 
   rtr.HandleFunc("/",hdeaddrop_home).Methods("GET")
 

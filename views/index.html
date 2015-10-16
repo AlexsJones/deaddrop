@@ -29,14 +29,13 @@ function validateForm() {
         <h1 class="cover-heading">Upload</h1>
         <p class="lead">One time links to files you care about</p>
 
-        <form action="/deaddrop/upload" method="POST" enctype="multipart/form-data">
-        <div class="form-group">
-          <input class="form-control" name="file" type="file"></input>
-          <br />
-          <input type="submit" class="btn btn-lg btn-default"/>
-	      </div>
-        </form> 
+     
 
+        
+            <form enctype="multipart/form-data">
+                <input id="input-id" class="file" type="file" multiple data-min-file-count="1">
+            </form>
+        
         <h1 class="cover-heading">Retrieve</h1>
         <p class="lead">Use a one time cipher to retrieve a file</p>
 
@@ -52,3 +51,14 @@ function validateForm() {
     </div>
     </div>
 </div> 
+<script>
+// initialize with defaults
+$("#input-id").fileinput({
+        'uploadUrl': '/deaddrop/upload',
+        'allowedFileExtensions' : ['jpg', 'png','gif'],
+        'maxFileSize': 10000,
+        'maxFilesNum': 1,
+        'elErrorContainer': '#errorBlock'
+    });
+
+</script>

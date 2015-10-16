@@ -62,7 +62,33 @@ func hdeaddrop_upload(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintln(w, err)
   }
 
-  w.Write([]byte("Generating 1 time download code: "+ hashedGuid))
+  http.Redirect(w, r, "/code/" + hashedGuid, http.StatusFound)
+}
+
+func hdeaddrop_code(w http.ResponseWriter, r *http.Request) {
+
+  params := mux.Vars(r)
+  id := params["id"]
+  log.Println("code/" + id)
+
+  s1, _ := template.ParseFiles("tmpl/header.tmpl", 
+  "tmpl/content.tmpl", "tmpl/footer.tmpl")
+
+  fbody, err := ioutil.ReadFile("views/code.html")
+  if err != nil {
+
+  }
+  s2, _ := template.New("").Parse(string(fbody))
+
+  var prebuffer bytes.Buffer
+  s2.Execute(&prebuffer,id)
+  
+  var buffer bytes.Buffer
+  s1.ExecuteTemplate(&buffer, "header", nil)
+  s1.ExecuteTemplate(&buffer, "content", template.HTML(prebuffer.Bytes()))
+  s1.ExecuteTemplate(&buffer, "footer", nil)
+
+  w.Write(buffer.Bytes())
 
 }
 
@@ -187,6 +213,8 @@ func main() {
   rtr.HandleFunc("/deaddrop/fetch/{id}",hdeaddrop_uploadwithId).Methods("GET")
 
   rtr.HandleFunc("/",hdeaddrop_home).Methods("GET")
+
+  rtr.HandleFunc("/code/{id}", hdeaddrop_code)
 
   http.Handle("/",rtr)
 

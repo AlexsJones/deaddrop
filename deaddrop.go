@@ -9,7 +9,6 @@ import (
   "io"
   "log"	
   "net/http"
-  "encoding/json"
   "github.com/gorilla/mux"
   "github.com/AlexsJones/deaddrop/utils"
   "github.com/jinzhu/gorm"
@@ -59,31 +58,13 @@ func hdeaddrop_upload(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintln(w, err)
   }
 
-  w.Write([]byte("Generating 1 time download link " + "http://" +
-  utils.GetHostnameIpv4() + ":" + port +  "/deaddrop/upload/" + hashedGuid))
-}
-
-func hdeaddrop_post(w http.ResponseWriter, r *http.Request) {
-  decoder := json.NewDecoder(r.Body)
-  var i incoming_data
-  err := decoder.Decode(&i)
-  if err != nil {
-    log.Println("Malformed post")
-    return
-  }
-  log.Println(i.Data)
-
-  guid := utils.NewGuid()
-
-  i.Guid = utils.Hash(guid)
-
-  databaseConnect.Create(&i)
-
+  w.Write([]byte("Generating 1 time download code: "+ hashedGuid))
 }
 
 func hdeaddrop_get(w http.ResponseWriter, r *http.Request) {
-  params := mux.Vars(r)
-  id := params["id"]
+
+  r.ParseForm()
+  id := r.FormValue("id")
 
   dirname := "uploads"
   d, err := os.Open(dirname)
@@ -105,7 +86,7 @@ func hdeaddrop_get(w http.ResponseWriter, r *http.Request) {
       if splitString[0] == id {
 
 	file := "uploads/" + fi.Name()
-	
+
 	log.Println(file)
 
 	http.ServeFile(w,r,file)
@@ -161,6 +142,8 @@ func hdeaddrop_home(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
+  os.Mkdir("uploads",0777)
+
   if os.Getenv("DEADDROP_CONF")  != "" {
     configuration = utils.NewConfiguration(os.Getenv("DEADDROP_CONF"))
   }else {
@@ -179,7 +162,7 @@ func main() {
 
   rtr := mux.NewRouter()
 
-  rtr.HandleFunc("/deaddrop/upload/{id}", hdeaddrop_get).Methods("GET")
+  rtr.HandleFunc("/deaddrop/fetch", hdeaddrop_get).Methods("POST")
 
   rtr.HandleFunc("/deaddrop/upload",hdeaddrop_upload).Methods("POST")
 

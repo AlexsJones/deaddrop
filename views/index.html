@@ -20,7 +20,7 @@
 function validateForm() {
     var x = document.forms["fetchid"]["id"].value;
     if (x == null || x == "") {
-        alert("Cipher code must be filled out");
+        alert("Name must be filled out");
         return false;
     }
 }
@@ -29,47 +29,80 @@ function validateForm() {
         <h1 class="cover-heading">Upload</h1>
         <p class="lead">One time links to files you care about</p>
 
-            <form enctype="multipart/form-data">
-                <input id="input-id" class="file" type="file" multiple data-min-file-count="1">
-            </form>
-        
-        <h1 class="cover-heading">Retrieve</h1>
-        <p class="lead">Use a one time cipher to retrieve a file ( max size 9 megs )</p>
+        <form action="/deaddrop/upload" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+          <input class="form-control" name="file" type="file"></input>
+          <br />
+          <input type="submit" class="btn btn-lg btn-default"/>
+        </div>
+        </form> 
 
-        <form action="/deaddrop/fetch" name="fetchid" onsubmit="return validateForm()" method="POST">
+        <h1 class="cover-heading">Retrieve</h1>
+        <p class="lead">Use a one time cipher to retrieve a file</p>
+
+        <form action="/deaddrop/fetch" name="fetchid" method="POST">
         
         <div class="form-group">
           <input class="form-control text-center" name="id" type="text" />
           <br />
           <input type="submit" class="btn btn-lg btn-default"/>
-	       </div>
+         </div>
         </form>
       </div>
     </div>
     </div>
 </div> 
+
+<div class="site-wrapper">
+
+  <div class="site-wrapper-inner">
+
+    <div class="cover-container">
+
+      <div class="masthead clearfix">
+        <div class="inner">
+          <h3 class="masthead-brand">DeadDrop</h3>
+          <nav>
+            <ul class="nav masthead-nav">
+              <li class="active"><a href="#">Home</a></li>
+              <li><a href="mailto:tibbar@freedommail.ch">Contact</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
 <script>
-// initialize with defaults
-$("#input-id").fileinput({
-        uploadUrl: '/deaddrop/upload',
-        allowedFileExtensions: ['jpg', 'png','gif'],
-        maxFileSize: 10000,
-        maxFilesNum: 1,
-        uploadAsync: false,
-        elErrorContainer: '#errorBlock'
-    });
-
- // CATCH RESPONSE
-$('#input-id').on('filebatchuploaderror', function(event, data, previewId, index) {
-var form = data.form, files = data.files, extra = data.extra, 
-    response = data.response, reader = data.reader;
-
-});
-
-
-$('#input-id').on('filebatchuploadsuccess', function(event, data, previewId, index) {
-   var form = data.form, files = data.files, extra = data.extra, 
-    response = data.response, reader = data.reader;
-    alert (extra.bdInteli + " " +  response.uploaded);
-});
+function validateForm() {
+    var x = document.forms["fetchid"]["id"].value;
+    if (x == null || x == "") {
+        alert("Name must be filled out");
+        return false;
+    }
+}
 </script>
+      <div class="inner cover">
+        <h1 class="cover-heading">Upload</h1>
+        <p class="lead">One time links to files you care about</p>
+
+        <form action="/deaddrop/upload" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+          <input class="form-control" name="file" type="file"></input>
+          <br />
+          <input type="submit" class="btn btn-lg btn-default"/>
+        </div>
+        </form> 
+
+        <h1 class="cover-heading">Retrieve</h1>
+        <p class="lead">Use a one time cipher to retrieve a file</p>
+
+        <form action="/deaddrop/fetch" name="fetchid" method="POST">
+        
+        <div class="form-group">
+          <input class="form-control text-center" name="id" type="text" />
+          <br />
+          <input type="submit" class="btn btn-lg btn-default"/>
+         </div>
+        </form>
+      </div>
+    </div>
+    </div>
+</div> 

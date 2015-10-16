@@ -14,69 +14,52 @@ import (
   "io/ioutil"
   "html/template"
   "strings"
-  "mime/multipart"
 )
 
 var port string 
 
 var configuration utils.Configuration 
 
-func hdeaddrop_upload(res http.ResponseWriter, req *http.Request) {  
 
-      var (  
-           status int  
-           err  error  
-           guid string
-           hashedGuid string
-      )  
-log.Println("=============1")   
-      // parse request  
-      const _24K = (1 << 20) * 24  
-      if err = req.ParseMultipartForm(_24K); nil != err {  
-           status = http.StatusInternalServerError  
-           res.Write([]byte(err.Error()))  
-           return  
-      }  
-      for _, fheaders := range req.MultipartForm.File {  
-           for _, hdr := range fheaders {  
-                // open uploaded  
-                var infile multipart.File  
-                if infile, err = hdr.Open(); nil != err {  
-                     status = http.StatusInternalServerError  
-                     res.Write([]byte(err.Error()))  
-                     return  
-                }  
+func hdeaddrop_upload(w http.ResponseWriter, r *http.Request) {
+  
+  const _24K = (1 << 20) * 24  
+  if err := r.ParseMultipartForm(_24K); nil != err {  
+    return 
+  } 
 
-                guid = utils.NewGuid()
+  file, header, err := r.FormFile("file") 
+  defer file.Close()
 
-                hashedGuid = utils.Hash(guid)
+  if err != nil {
+    fmt.Fprintln(w, err)
+    log.Println(err.Error())
+    return
+  }
 
-                filenameCipher := hashedGuid + "_" + hdr.Filename
-log.Println("=============2")   
-                // open destination  
-                var outfile *os.File  
-                if outfile, err = os.Create("uploads/" + filenameCipher); nil != err {  
-                     status = http.StatusInternalServerError  
-                     res.Write([]byte(err.Error()))  
-                     return  
-                }  
-log.Println("=============3")   
-                // 32K buffer copy  
-                var written int64  
-                if written, err = io.Copy(outfile, infile); nil != err {  
-                     status = http.StatusInternalServerError  
-                     res.Write([]byte(err.Error()))  
-                     return  
-                }
-log.Println("=============4")   
-                log.Println(written)
-                log.Println(status)
-                res.Write([]byte("Download cipher: " + hashedGuid))
-log.Println("=============5")   
-           }  
-      }  
-    res.Write([]byte("Okay"))
- } 
+  guid := utils.NewGuid()
+
+  hashedGuid := utils.Hash(guid)
+
+  filenameCipher := hashedGuid + "_" + header.Filename
+
+  out, err := os.Create("uploads/" + filenameCipher)
+
+  if err != nil {
+    fmt.Fprintf(w, "Unable to create the file for writing. Check your write access privilege")
+    return
+  }
+
+  defer out.Close()
+
+  _, err = io.Copy(out, file)
+  if err != nil {
+    fmt.Fprintln(w, err)
+  }
+
+  w.Write([]byte("Generating 1 time download code: "+ hashedGuid))
+
+}
 
 func hdeaddrop_fetch(w http.ResponseWriter, r *http.Request) {
 
@@ -156,7 +139,7 @@ func main() {
 
   rtr.HandleFunc("/deaddrop/fetch", hdeaddrop_fetch).Methods("POST")
 
-  rtr.HandleFunc("/deaddrop/upload",hdeaddrop_upload)
+  rtr.HandleFunc("/deaddrop/upload",hdeaddrop_upload).Methods("POST")
 
   rtr.HandleFunc("/",hdeaddrop_home).Methods("GET")
 

@@ -62,8 +62,46 @@ func hdeaddrop_upload(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintln(w, err)
   }
 
-  w.Write([]byte("Generating 1 time download code: "+ hashedGuid))
+  w.Write([]byte("Generating 1 time download code: "+ "http://silentdrop.io/deaddrop/fetch/" + hashedGuid))
 
+}
+
+func hdeaddrop_uploadwithId(w http.ResponseWriter, r *http.Request) {
+  
+  params := mux.Vars(r)
+  id := params["id"]
+
+  dirname := "uploads"
+  d, err := os.Open(dirname)
+  if err != nil {
+    fmt.Println(err)
+    os.Exit(1)
+  }
+  defer d.Close()
+  fi, err := d.Readdir(-1)
+  if err != nil {
+    fmt.Println(err)
+    os.Exit(1)
+  }
+  for _, fi := range fi {
+    if fi.Mode().IsRegular() {
+
+      splitString := strings.Split(fi.Name(),"_") 
+
+      if splitString[0] == id {
+
+  file := "uploads/" + fi.Name()
+
+  log.Println(file)
+
+  http.ServeFile(w,r,file)
+
+  /* Delete file */
+  os.Remove(file)
+      }
+    }
+  }
+  w.Write([]byte("404"))
 }
 
 func hdeaddrop_fetch(w http.ResponseWriter, r *http.Request) {
@@ -145,6 +183,8 @@ func main() {
   rtr.HandleFunc("/deaddrop/fetch", hdeaddrop_fetch).Methods("POST")
 
   rtr.HandleFunc("/deaddrop/upload",hdeaddrop_upload).Methods("POST")
+
+  rtr.HandleFunc("/deaddrop/fetch/{id}",hdeaddrop_uploadwithId).Methods("GET")
 
   rtr.HandleFunc("/",hdeaddrop_home).Methods("GET")
 

@@ -62,7 +62,10 @@ func hdeaddrop_upload(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintln(w, err)
   }
 
-  w.Write([]byte("Generating 1 time download code: "+ "http://silentdrop.io/deaddrop/fetch/" + hashedGuid))
+  w.Write([]byte("<html><body>Generating 1 time download code: "+ "<a href='" +
+   "http://silentdrop.io/deaddrop/fetch/" + filenameCipher + 
+   "'>http://silentdrop.io/deaddrop/fetch/" + hashedGuid + 
+    "</a></body></html>"))
 
 }
 

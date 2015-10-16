@@ -11,22 +11,14 @@ import (
   "net/http"
   "github.com/gorilla/mux"
   "github.com/AlexsJones/deaddrop/utils"
-  "github.com/jinzhu/gorm"
   "io/ioutil"
   "html/template"
   "strings"
 )
 
-var databaseConnect gorm.DB
-
 var port string 
 
 var configuration utils.Configuration 
-
-type incoming_data struct {
-  Data string
-  Guid string
-}
 
 func hdeaddrop_upload(w http.ResponseWriter, r *http.Request) {
 
@@ -61,7 +53,7 @@ func hdeaddrop_upload(w http.ResponseWriter, r *http.Request) {
   w.Write([]byte("Generating 1 time download code: "+ hashedGuid))
 }
 
-func hdeaddrop_get(w http.ResponseWriter, r *http.Request) {
+func hdeaddrop_fetch(w http.ResponseWriter, r *http.Request) {
 
   r.ParseForm()
   id := r.FormValue("id")
@@ -99,30 +91,6 @@ func hdeaddrop_get(w http.ResponseWriter, r *http.Request) {
   w.Write([]byte("404"))
 }
 
-func initialiseDatabase() {
-
-  dbstring := configuration.Json.DBConnectionString
-
-  if os.Getenv("DEADDROP_DBCONNECTIONSTRING") != "" {
-    dbstring = os.Getenv("DEADDROP_DBCONNECTIONSTRING")
-  }
-
-  db, err := gorm.Open("postgres",dbstring)
-
-  utils.CheckErr(err, "postgres failed")
-
-  db.DB()
-
-  db.DB().Ping()
-
-  db.SingularTable(true)
-
-  db.CreateTable(&incoming_data{})
-
-  databaseConnect = db
-
-}
-
 func hdeaddrop_home(w http.ResponseWriter, r *http.Request) {
 
   s1, _ := template.ParseFiles("tmpl/header.tmpl", 
@@ -158,11 +126,9 @@ func main() {
     configuration = utils.NewConfiguration(*confFlag)
   }
 
-  initialiseDatabase()
-
   rtr := mux.NewRouter()
 
-  rtr.HandleFunc("/deaddrop/fetch", hdeaddrop_get).Methods("POST")
+  rtr.HandleFunc("/deaddrop/fetch", hdeaddrop_fetch).Methods("POST")
 
   rtr.HandleFunc("/deaddrop/upload",hdeaddrop_upload).Methods("POST")
 

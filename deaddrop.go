@@ -21,7 +21,12 @@ var port string
 var configuration utils.Configuration 
 
 func hdeaddrop_upload(w http.ResponseWriter, r *http.Request) {
-
+  
+  const _24K = (1 << 20) * 24  
+  if err := r.ParseMultipartForm(_24K); nil != err {  
+    return 
+  } 
+ 
   file, header, err := r.FormFile("file") 
   defer file.Close()
 
@@ -135,6 +140,10 @@ func main() {
   rtr.HandleFunc("/",hdeaddrop_home).Methods("GET")
 
   http.Handle("/",rtr)
+
+  publicfolder := http.FileServer(http.Dir("./public/"))
+
+  http.Handle("/public/",http.StripPrefix("/public/",publicfolder))
 
   port = configuration.Json.Port
   if os.Getenv("PORT") != "" {

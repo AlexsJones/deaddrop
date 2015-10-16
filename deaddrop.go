@@ -23,6 +23,12 @@ var configuration utils.Configuration
 
 func hdeaddrop_upload(w http.ResponseWriter, r *http.Request) {
   
+  if r.ContentLength > (1024 * 10) {
+
+      http.Error(w,"request too large", http.StatusExpectationFailed)
+      return
+  }
+
   const _24K = (1 << 20) * 24  
   if err := r.ParseMultipartForm(_24K); nil != err {  
     return 

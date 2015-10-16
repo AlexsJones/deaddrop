@@ -20,7 +20,7 @@
 function validateForm() {
     var x = document.forms["fetchid"]["id"].value;
     if (x == null || x == "") {
-        alert("Name must be filled out");
+        alert("Cipher code must be filled out");
         return false;
     }
 }
@@ -39,7 +39,7 @@ function validateForm() {
         <h1 class="cover-heading">Retrieve</h1>
         <p class="lead">Use a one time cipher to retrieve a file</p>
 
-        <form action="/deaddrop/fetch" name="fetchid" method="POST">
+        <form action="/deaddrop/fetch" name="fetchid" onsubmit="return validateForm()" method="POST">
         
         <div class="form-group">
           <input class="form-control text-center" name="id" type="text" />

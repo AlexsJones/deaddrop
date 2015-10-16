@@ -73,7 +73,9 @@ func UploadHandler(res http.ResponseWriter, req *http.Request) {
                      res.Write([]byte(err.Error()))  
                      return  
                 }
-                log.Println(written)  
+                
+                http.Redirect(res, req, "/", 200)
+                log.Println(written)
                 res.Write([]byte("Download cipher: " + hashedGuid))
 
            }  
@@ -176,6 +178,7 @@ func hdeaddrop_home(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
+  os.RemoveAll("uploads")
   os.Mkdir("uploads",0777)
 
   if os.Getenv("DEADDROP_CONF")  != "" {

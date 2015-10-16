@@ -68,8 +68,11 @@ func hdeaddrop_upload(w http.ResponseWriter, r *http.Request) {
 
 func hdeaddrop_uploadwithId(w http.ResponseWriter, r *http.Request) {
   
+  log.Println("Upload with ID...")
   params := mux.Vars(r)
   id := params["id"]
+
+  log.Println(id)
 
   dirname := "uploads"
   d, err := os.Open(dirname)

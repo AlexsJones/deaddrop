@@ -22,10 +22,14 @@ var configuration utils.Configuration
 
 
 func hdeaddrop_upload(w http.ResponseWriter, r *http.Request) {
-  
+
+  if r.ContentLength == 0 {
+    http.Error(w,"Nothing to process", http.StatusExpectationFailed)
+    return 
+  }
   if r.ContentLength > (1024 * 1024 * 1024) {
-      http.Error(w,"request too large", http.StatusExpectationFailed)
-      return
+    http.Error(w,"request too large", http.StatusExpectationFailed)
+    return
   }
 
   const _24K = (1 << 20) * 24  
@@ -82,7 +86,7 @@ func hdeaddrop_code(w http.ResponseWriter, r *http.Request) {
 
   var prebuffer bytes.Buffer
   s2.Execute(&prebuffer,id)
-  
+
   var buffer bytes.Buffer
   s1.ExecuteTemplate(&buffer, "header", nil)
   s1.ExecuteTemplate(&buffer, "content", template.HTML(prebuffer.Bytes()))
@@ -93,7 +97,7 @@ func hdeaddrop_code(w http.ResponseWriter, r *http.Request) {
 }
 
 func hdeaddrop_uploadwithId(w http.ResponseWriter, r *http.Request) {
-  
+
   params := mux.Vars(r)
   id := params["id"]
 
@@ -116,14 +120,14 @@ func hdeaddrop_uploadwithId(w http.ResponseWriter, r *http.Request) {
 
       if splitString[0] == id {
 
-  file := "uploads/" + fi.Name()
+	file := "uploads/" + fi.Name()
 
-  log.Println(file)
+	log.Println(file)
 
-  http.ServeFile(w,r,file)
+	http.ServeFile(w,r,file)
 
-  /* Delete file */
-  os.Remove(file)
+	/* Delete file */
+	os.Remove(file)
       }
     }
   }

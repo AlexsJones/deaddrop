@@ -39,14 +39,16 @@
       </div>
 
       <form action="/deaddrop/upload" method="POST" enctype="multipart/form-data">
-        <div class="container">
-          <div class="form-group">
-            <input name="file" type="file"></input>
+        <div class="span12">
+            <span class="btn btn-default btn-file">
+              Browse <input name="file" type="file"></input>
+            </span>
+            <br />
             <br />
             <input type="submit" class="btn btn-lg btn-default"/>
-          </div>
-        </form> 
-      </div>
+        </div>
+      </form> 
+      
       <h1 class="cover-heading">Retrieve</h1>
       <p class="lead">Use a one time cipher to retrieve a file</p>
 

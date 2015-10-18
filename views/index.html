@@ -3,65 +3,68 @@
 
   <div class="site-wrapper-inner">
 
+    <div  class="span4"></div>
+    <div  class="span4"><img class="center-block" src="public/img/usb.png" /></div>
+    <div  class="span4"></div>
     <div class="cover-container">
 
       <script>
-        function validate_fileupload()
-        {
-          var fileUpload = $('#fileu').val();
-         if(fileUpload) {
+function validate_fileupload()
+{
+  var fileUpload = $('#fileu').val();
+  if(fileUpload) {
 
-          var allowed_extensions = new Array("jpg","png","gif","txt","pdf","zip");
-        var file_extension = fileUpload.split('.').pop(); // split function will split the filename by dot(.), and pop function will pop the last element from the array which will give you the extension as well. If there will be no extension then it will return the filename.
+    var allowed_extensions = new Array("jpg","png","gif","txt","pdf","zip");
+    var file_extension = fileUpload.split('.').pop(); // split function will split the filename by dot(.), and pop function will pop the last element from the array which will give you the extension as well. If there will be no extension then it will return the filename.
 
-        for(var i = 0; i <= allowed_extensions.length; i++)
-        {
-          if(allowed_extensions[i]==file_extension)
-          {
-            return true; // valid file extension
-          }
-        }
+    for(var i = 0; i <= allowed_extensions.length; i++)
+    {
+      if(allowed_extensions[i]==file_extension)
+      {
+        return true; // valid file extension
       }
-        alert("Please select a file for upload - Excepted types are jpg|png|gif|txt|pdf|zip (More to come!)")
-        return false;
-      } 
+    }
+  }
+  alert("Please select a file for upload - Excepted types are jpg|png|gif|txt|pdf|zip (More to come!)")
+    return false;
+} 
 
 
-      function validateForm() {
-        var x = document.forms["fetchid"]["id"].value;
-        if (x == null || x == "") {
-          alert("Name must be filled out");
-          return false;
-        }
-      }
-    </script>
-    <div class="inner cover">
-      <h1 class="cover-heading">Upload</h1>
-      <p class="lead">One time links to files you care about</p>
+function validateForm() {
+  var x = document.forms["fetchid"]["id"].value;
+  if (x == null || x == "") {
+    alert("Name must be filled out");
+    return false;
+  }
+}
+      </script>
+      <div class="inner cover">
+        <h1 class="cover-heading">Upload</h1>
+        <p class="lead">One time links to files you care about</p>
+      </div>
+
+      <form action="/deaddrop/upload" method="POST" onsubmit="return validate_fileupload();" enctype="multipart/form-data">
+        <div class="span12">
+          <span class="btn btn-default btn-file">
+            Upload file <input name="file" id="fileu" type="file"></input>
+          </span>
+          <br />
+          <br />
+          <input type="submit" name="Upload file" class="btn btn-lg btn-default"/>
+        </div>
+      </form> 
+
+      <h1 class="cover-heading">Retrieve</h1>
+      <p class="lead">Use a one time cipher to retrieve a file</p>
+
+      <form action="/deaddrop/fetch" onsubmit="return validateForm();" name="fetchid" method="POST">
+
+        <div class="form-group">
+          <input class="form-control text-center" name="id" type="text" />
+          <br />
+          <input type="submit" name="Fetch file" class="btn btn-lg btn-default"/>
+        </div>
+      </form>
     </div>
-
-    <form action="/deaddrop/upload" method="POST" onsubmit="return validate_fileupload();" enctype="multipart/form-data">
-      <div class="span12">
-        <span class="btn btn-default btn-file">
-          Upload file <input name="file" id="fileu" type="file"></input>
-        </span>
-        <br />
-        <br />
-        <input type="submit" name="Upload file" class="btn btn-lg btn-default"/>
-      </div>
-    </form> 
-
-    <h1 class="cover-heading">Retrieve</h1>
-    <p class="lead">Use a one time cipher to retrieve a file</p>
-
-    <form action="/deaddrop/fetch" onsubmit="return validateForm();" name="fetchid" method="POST">
-
-      <div class="form-group">
-        <input class="form-control text-center" name="id" type="text" />
-        <br />
-        <input type="submit" name="Fetch file" class="btn btn-lg btn-default"/>
-      </div>
-    </form>
   </div>
-</div>
 </div>

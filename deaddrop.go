@@ -75,7 +75,7 @@ func hdeaddrop_code(w http.ResponseWriter, r *http.Request) {
   id := params["id"]
   log.Println("code/" + id)
 
-  s1, _ := template.ParseFiles("tmpl/header.tmpl", 
+  s1, _ := template.ParseFiles("tmpl/headersub.tmpl", 
   "tmpl/content.tmpl", "tmpl/footer.tmpl")
 
   fbody, err := ioutil.ReadFile("views/code.html")
@@ -189,6 +189,25 @@ func hdeaddrop_home(w http.ResponseWriter, r *http.Request) {
   w.Write(buffer.Bytes())
 }
 
+func registerRoutes() {
+
+  rtr := mux.NewRouter()
+
+  rtr.HandleFunc("/deaddrop/fetch", hdeaddrop_fetch).Methods("POST")
+
+  rtr.HandleFunc("/deaddrop/upload",hdeaddrop_upload).Methods("POST")
+
+  rtr.HandleFunc("/deaddrop/fetch/{id}",hdeaddrop_uploadwithId).Methods("GET")
+
+  rtr.HandleFunc("/",hdeaddrop_home).Methods("GET")
+
+  rtr.HandleFunc("/code/{id}", hdeaddrop_code)
+
+  http.Handle("/",rtr)
+
+  http.Handle("/public/",http.StripPrefix("/public/",http.FileServer(http.Dir("public/"))))
+}
+
 func main() {
 
   os.RemoveAll("uploads")
@@ -208,23 +227,7 @@ func main() {
     configuration = utils.NewConfiguration(*confFlag)
   }
 
-  rtr := mux.NewRouter()
-
-  rtr.HandleFunc("/deaddrop/fetch", hdeaddrop_fetch).Methods("POST")
-
-  rtr.HandleFunc("/deaddrop/upload",hdeaddrop_upload).Methods("POST")
-
-  rtr.HandleFunc("/deaddrop/fetch/{id}",hdeaddrop_uploadwithId).Methods("GET")
-
-  rtr.HandleFunc("/",hdeaddrop_home).Methods("GET")
-
-  rtr.HandleFunc("/code/{id}", hdeaddrop_code)
-
-  http.Handle("/",rtr)
-
-  publicfolder := http.FileServer(http.Dir("./public/"))
-
-  http.Handle("/public/",http.StripPrefix("/public/",publicfolder))
+  registerRoutes()
 
   port = configuration.Json.Port
   if os.Getenv("PORT") != "" {

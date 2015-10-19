@@ -36,11 +36,11 @@ function validateForm() {
       <form action="/deaddrop/upload" method="POST" onsubmit="return validate_fileupload();" enctype="multipart/form-data">
         <div class="span12">
           <span class="btn btn-default btn-file">
-            Upload file <input name="file" id="fileu" type="file"></input>
+            Browse file <input name="file" id="fileu" type="file"></input>
           </span>
           <br />
           <br />
-          <input type="submit" name="Upload file" class="btn btn-lg btn-default"/>
+          <input type="submit" value="Upload" name="Upload file" class="btn btn-lg btn-default"/>
         </div>
       </form> 
 
@@ -52,7 +52,7 @@ function validateForm() {
           <input class="form-control text-center" name="id" type="text" />
           <br />
           <div class="row">
-          <input type="submit" name="Fetch file" class="btn btn-lg btn-default"/>
+          <input type="submit" value="Retrieve" name="Fetch file" class="btn btn-lg btn-default"/>
         </div>
         </div>
       </form>

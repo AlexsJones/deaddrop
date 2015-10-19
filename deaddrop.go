@@ -131,7 +131,19 @@ func hdeaddrop_uploadwithId(w http.ResponseWriter, r *http.Request) {
       }
     }
   }
-  w.Write([]byte("404"))
+   s1, _ := template.ParseFiles("tmpl/headersub.tmpl", 
+  "tmpl/content.tmpl", "tmpl/footer.tmpl")
+
+  fbody, err := ioutil.ReadFile("views/notfound.html")
+  if err != nil {
+
+  }
+  var buffer bytes.Buffer
+  s1.ExecuteTemplate(&buffer, "header", nil)
+  s1.ExecuteTemplate(&buffer, "content", template.HTML(string(fbody)))
+  s1.ExecuteTemplate(&buffer, "footer", nil)
+
+  w.Write(buffer.Bytes())
 }
 
 func hdeaddrop_fetch(w http.ResponseWriter, r *http.Request) {
@@ -169,7 +181,21 @@ func hdeaddrop_fetch(w http.ResponseWriter, r *http.Request) {
 	os.Remove(file)
       } 
   }
-  w.Write([]byte("404"))
+
+
+  s1, _ := template.ParseFiles("tmpl/headersub.tmpl", 
+  "tmpl/content.tmpl", "tmpl/footer.tmpl")
+
+  fbody, err := ioutil.ReadFile("views/notfound.html")
+  if err != nil {
+
+  }
+  var buffer bytes.Buffer
+  s1.ExecuteTemplate(&buffer, "header", nil)
+  s1.ExecuteTemplate(&buffer, "content", template.HTML(string(fbody)))
+  s1.ExecuteTemplate(&buffer, "footer", nil)
+
+  w.Write(buffer.Bytes())
 }
 
 func hdeaddrop_home(w http.ResponseWriter, r *http.Request) {

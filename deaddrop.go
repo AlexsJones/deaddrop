@@ -137,7 +137,7 @@ func hdeaddrop_uploadwithId(w http.ResponseWriter, r *http.Request) {
 func hdeaddrop_fetch(w http.ResponseWriter, r *http.Request) {
 
   r.ParseForm()
-  id := r.FormValue("id")
+  id := strings.TrimSpace(r.FormValue("id"))
 
   log.Println("Fetching " + id)
   dirname := "uploads"
@@ -153,22 +153,19 @@ func hdeaddrop_fetch(w http.ResponseWriter, r *http.Request) {
     os.Exit(1)
   }
   for _, fi := range fi {
-    if fi.Mode().IsRegular() {
-
       splitString := strings.Split(fi.Name(),"_") 
       log.Println("Testing " + splitString[0] + " against input Id of " + id)
       if splitString[0] == id {
 
 	file := "uploads/" + fi.Name()
 
-	log.Println(file)
+	log.Println("Serving file " + file)
 
 	http.ServeFile(w,r,file)
 
 	/* Delete file */
 	os.Remove(file)
       }
-    }
   }
   w.Write([]byte("404"))
 }

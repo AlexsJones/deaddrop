@@ -152,7 +152,9 @@ func hdeaddrop_fetch(w http.ResponseWriter, r *http.Request) {
     fmt.Println(err)
     os.Exit(1)
   }
+
   for _, fi := range fi {
+    log.Println(fi)
       splitString := strings.Split(fi.Name(),"_") 
       log.Println("Testing " + splitString[0] + " against input Id of " + id)
       if splitString[0] == id {
@@ -165,7 +167,7 @@ func hdeaddrop_fetch(w http.ResponseWriter, r *http.Request) {
 
 	/* Delete file */
 	os.Remove(file)
-      }
+      } 
   }
   w.Write([]byte("404"))
 }

@@ -139,6 +139,7 @@ func hdeaddrop_fetch(w http.ResponseWriter, r *http.Request) {
   r.ParseForm()
   id := r.FormValue("id")
 
+  log.Println("Fetching " + id)
   dirname := "uploads"
   d, err := os.Open(dirname)
   if err != nil {
@@ -155,7 +156,7 @@ func hdeaddrop_fetch(w http.ResponseWriter, r *http.Request) {
     if fi.Mode().IsRegular() {
 
       splitString := strings.Split(fi.Name(),"_") 
-
+      log.Println("Testing " + splitString[0] + " against input Id of " + id)
       if splitString[0] == id {
 
 	file := "uploads/" + fi.Name()

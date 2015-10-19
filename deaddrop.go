@@ -131,7 +131,7 @@ func hdeaddrop_uploadwithId(w http.ResponseWriter, r *http.Request) {
       }
     }
   }
-   s1, _ := template.ParseFiles("tmpl/headersub.tmpl", 
+   s1, _ := template.ParseFiles("tmpl/headersubsub.tmpl", 
   "tmpl/content.tmpl", "tmpl/footer.tmpl")
 
   fbody, err := ioutil.ReadFile("views/notfound.html")

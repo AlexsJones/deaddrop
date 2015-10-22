@@ -29,7 +29,7 @@ func hdeaddrop_upload(w http.ResponseWriter, r *http.Request) {
     http.Error(w,"Nothing to process", http.StatusExpectationFailed)
     return 
   }
-  if r.ContentLength > (1024 * 1024 * 1024) {
+  if r.ContentLength > (1024 * 1024 * 10) {
     http.Error(w,"request too large", http.StatusExpectationFailed)
     return
   }

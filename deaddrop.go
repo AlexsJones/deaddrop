@@ -11,11 +11,13 @@ import (
   "net/http"
   "github.com/gorilla/mux"
   "github.com/AlexsJones/deaddrop/utils"
+  "crypto/rand"
   "io/ioutil"
   "html/template"
   "strings"
 )
 
+var cryptoKey []byte
 var port string 
 
 var configuration utils.Configuration 
@@ -27,7 +29,7 @@ func hdeaddrop_upload(w http.ResponseWriter, r *http.Request) {
     http.Error(w,"Nothing to process", http.StatusExpectationFailed)
     return 
   }
-  if r.ContentLength > (1024 * 1024 * 1024) {
+  if r.ContentLength > (1024 * 1024 * 10) {
     http.Error(w,"request too large", http.StatusExpectationFailed)
     return
   }
@@ -66,6 +68,8 @@ func hdeaddrop_upload(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintln(w, err)
   }
 
+  utils.EncryptContent("uploads/" + filenameCipher, cryptoKey)
+
   http.Redirect(w, r, "/code/" + hashedGuid, http.StatusFound)
 }
 
@@ -96,7 +100,7 @@ func hdeaddrop_code(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func hdeaddrop_uploadwithId(w http.ResponseWriter, r *http.Request) {
+func hdeaddrop_fetchWithId(w http.ResponseWriter, r *http.Request) {
 
   params := mux.Vars(r)
   id := params["id"]
@@ -118,20 +122,20 @@ func hdeaddrop_uploadwithId(w http.ResponseWriter, r *http.Request) {
 
       splitString := strings.Split(fi.Name(),"_") 
 
-      if splitString[0] == id {
+      if strings.Contains(splitString[0], id) == true {
 
-	file := "uploads/" + fi.Name()
+        decryptedFile := utils.DecryptContent("uploads/" + fi.Name(), cryptoKey)
 
-	log.Println(file)
+        log.Println(decryptedFile)
 
-	http.ServeFile(w,r,file)
+        http.ServeFile(w,r,decryptedFile)
 
-	/* Delete file */
-	os.Remove(file)
+        /* Delete file */
+        os.Remove(decryptedFile)
       }
     }
   }
-   s1, _ := template.ParseFiles("tmpl/headersubsub.tmpl", 
+  s1, _ := template.ParseFiles("tmpl/headersubsub.tmpl", 
   "tmpl/content.tmpl", "tmpl/footer.tmpl")
 
   fbody, err := ioutil.ReadFile("views/notfound.html")
@@ -167,19 +171,20 @@ func hdeaddrop_fetch(w http.ResponseWriter, r *http.Request) {
 
   for _, fi := range fi {
     log.Println(fi)
-      splitString := strings.Split(fi.Name(),"_") 
-      log.Println("Testing " + splitString[0] + " against input Id of " + id)
-      if splitString[0] == id {
+    splitString := strings.Split(fi.Name(),"_") 
+    log.Println("Testing " + splitString[0] + " against input Id of " + id)
 
-	file := "uploads/" + fi.Name()
+    if strings.Contains(splitString[0], id) == true {
 
-	log.Println("Serving file " + file)
+      decryptedFile := utils.DecryptContent("uploads/" + fi.Name(),cryptoKey)
 
-	http.ServeFile(w,r,file)
+      log.Println(decryptedFile)
 
-	/* Delete file */
-	os.Remove(file)
-      } 
+      http.ServeFile(w,r,decryptedFile)
+
+      /* Delete file */
+      os.Remove(decryptedFile)
+    }
   }
 
 
@@ -223,7 +228,7 @@ func registerRoutes() {
 
   rtr.HandleFunc("/deaddrop/upload",hdeaddrop_upload).Methods("POST")
 
-  rtr.HandleFunc("/deaddrop/fetch/{id}",hdeaddrop_uploadwithId).Methods("GET")
+  rtr.HandleFunc("/deaddrop/fetch/{id}",hdeaddrop_fetchWithId).Methods("GET")
 
   rtr.HandleFunc("/",hdeaddrop_home).Methods("GET")
 
@@ -235,6 +240,13 @@ func registerRoutes() {
 }
 
 func main() {
+
+  cryptoKey = make([]byte,16)
+
+  _, err := rand.Read(cryptoKey)
+  if err != nil {
+    panic(err.Error())
+  }
 
   os.RemoveAll("uploads")
   os.Mkdir("uploads",0777)

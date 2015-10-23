@@ -4,7 +4,7 @@ function validate_fileupload()
 {
   var fileUpload = $('#fileu').val();
   if(fileUpload) {
-        return true; // valid file extension
+    return true; // valid file extension
   }
   alert("Please select a file for upload - Excepted types are jpg|png|gif|txt|pdf|zip (More to come!)")
     return false;
@@ -28,16 +28,15 @@ function validateForm() {
     <div  class="span4"></div>
     <div class="cover-container">
 
+      <!--      <input id="input-id" type="file" class="file" data-preview-file-type="text" >
+      -->
       <div class="inner cover">
         <h1 class="cover-heading">Silentdrop</h1>
         <h4 class="lead">Encrypted one time links for files that matter to you.</h4>
       </div>
-
       <form action="/deaddrop/upload" method="POST" onsubmit="return validate_fileupload();" enctype="multipart/form-data">
-        <div class="span12">
-          <span class="btn btn-default btn-file">
-            Browse file <input name="file" id="fileu" type="file"></input>
-          </span>
+        <div class="span12"> 
+          <input name="file" id="fileu" type="file"></input>
           <br />
           <br />
           <input type="submit" value="Upload" name="Upload file" class="btn btn-lg btn-default"/>
@@ -60,3 +59,7 @@ function validateForm() {
     </div>
   </div>
 </div>
+
+<script>
+$("#fileu").fileinput();
+</script>

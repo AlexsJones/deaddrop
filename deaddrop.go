@@ -57,7 +57,8 @@ func hdeaddrop_upload(w http.ResponseWriter, r *http.Request) {
   out, err := os.Create("uploads/" + filenameCipher)
 
   if err != nil {
-    fmt.Fprintf(w, "Unable to create the file for writing. Check your write access privilege")
+    fmt.Fprintf(w,
+    "Unable to create the file for writing. Check your write access privilege")
     return
   }
 
@@ -236,7 +237,8 @@ func registerRoutes() {
 
   http.Handle("/",rtr)
 
-  http.Handle("/public/",http.StripPrefix("/public/",http.FileServer(http.Dir("public/"))))
+  http.Handle("/public/",
+  http.StripPrefix("/public/",http.FileServer(http.Dir("public/"))))
 }
 
 func main() {

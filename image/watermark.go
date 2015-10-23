@@ -1,5 +1,5 @@
 package image
-
+/*
 import (
   "image"
   "image/draw"
@@ -25,7 +25,6 @@ func getFormat(file *os.File) string {
   
     func GenerateWaterMark(inputImage string, watermarkText string) (string,error) {
 
-      /* target image path */
       targetimg, _ := os.Open(inputImage)
 
       var targetImage image.Image
@@ -43,7 +42,7 @@ func getFormat(file *os.File) string {
       }
 
       defer targetimg.Close()
-      // Read the font data.
+      
       fontBytes, err := ioutil.ReadFile("luxisr.ttf")
       if err != nil {
         log.Println(err)
@@ -55,7 +54,6 @@ func getFormat(file *os.File) string {
         return "", err
       }
 
-      // Initialize the context.
       fg, _ := image.Black, image.White
 
       rgba := image.NewRGBA(image.Rect(0, 0, 
@@ -75,14 +73,11 @@ func getFormat(file *os.File) string {
       current_offset_y := 0
       current_offset_x := 0
 
-      //totalWidth := targetImage.Bounds().Size().X
       totalHeight := targetImage.Bounds().Size().Y
 
-      // intervalX := 30
       intervalY := 20
 
       for current_offset_y < totalHeight {
-        // Draw the text.
         pt := freetype.Pt(current_offset_x, current_offset_y+int(c.PointToFixed(12)>>6))
         _, err = c.DrawString(watermarkText, pt)
         if err != nil {
@@ -108,3 +103,4 @@ func getFormat(file *os.File) string {
 
       return "watermarked_" + inputImage,nil
 }
+*/

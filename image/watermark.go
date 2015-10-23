@@ -8,7 +8,7 @@ import (
   "io/ioutil"
   "log"
   "os"
-  "github.com/golang/freetype"
+  "github.com/AlexsJones/deaddrop/Godeps/_workspace/src/github.com/golang/freetype"
 )
 func getFormat(file *os.File) string {
   bytes := make([]byte, 4)

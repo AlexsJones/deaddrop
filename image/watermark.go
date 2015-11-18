@@ -1,14 +1,15 @@
 package image
-/*
+
 import (
   "image"
   "image/draw"
+  "errors"
   "image/png"
   "image/jpeg"
   "io/ioutil"
   "log"
   "os"
-  "github.com/AlexsJones/deaddrop/Godeps/_workspace/src/github.com/golang/freetype"
+  "github.com/golang/freetype"
 )
 func getFormat(file *os.File) string {
   bytes := make([]byte, 4)
@@ -22,39 +23,39 @@ func getFormat(file *os.File) string {
       if bytes[0] == 0x42 && bytes[1] == 0x4D { return "bmp" }
       return ""
     }
-  
+
     func GenerateWaterMark(inputImage string, watermarkText string) (string,error) {
 
-      targetimg, _ := os.Open(inputImage)
+      targetimg, _ := os.Open("uploads/" + inputImage)
 
       var targetImage image.Image
 
       switch getFormat(targetimg) {
-
       case "png":
-        targetImage, _ = png.Decode(targetimg)
+	targetImage, _ = png.Decode(targetimg)
 
       case "jpg":
-        targetImage, _ = jpeg.Decode(targetimg)
+	targetImage, _ = jpeg.Decode(targetimg)
+
       default:
-        log.Println("Format not excepted")
-        os.Exit(1)
+	log.Println("Format not excepted")
+	return "",errors.New("Format not expected")
       }
 
       defer targetimg.Close()
-      
-      fontBytes, err := ioutil.ReadFile("luxisr.ttf")
+
+      fontBytes, err := ioutil.ReadFile("public/fonts/luxisr.ttf")
       if err != nil {
-        log.Println(err)
-        return "",err
+	log.Println(err)
+	return "",err
       }
       f, err := freetype.ParseFont(fontBytes)
       if err != nil {
-        log.Println(err)
-        return "", err
+	log.Println(err)
+	return "", err
       }
 
-      fg, _ := image.Black, image.White
+      fg, _ := image.White, image.Black
 
       rgba := image.NewRGBA(image.Rect(0, 0, 
       targetImage.Bounds().Size().X, targetImage.Bounds().Size().Y))
@@ -64,7 +65,7 @@ func getFormat(file *os.File) string {
       c := freetype.NewContext()
       c.SetDPI(72)
       c.SetFont(f)
-      c.SetFontSize(12)
+      c.SetFontSize(30)
       c.SetClip(rgba.Bounds())
       c.SetDst(rgba)
       c.SetSrc(fg)
@@ -75,16 +76,16 @@ func getFormat(file *os.File) string {
 
       totalHeight := targetImage.Bounds().Size().Y
 
-      intervalY := 20
+      intervalY := 40
 
       for current_offset_y < totalHeight {
-        pt := freetype.Pt(current_offset_x, current_offset_y+int(c.PointToFixed(12)>>6))
-        _, err = c.DrawString(watermarkText, pt)
-        if err != nil {
-          log.Println(err)
-          return "", err
-        }
-        current_offset_y += intervalY
+	pt := freetype.Pt(current_offset_x, current_offset_y+int(c.PointToFixed(30)>>6))
+	_, err = c.DrawString(watermarkText, pt)
+	if err != nil {
+	  log.Println(err)
+	  return "", err
+	}
+	current_offset_y += intervalY
       }
 
       log.Println("Generated in memory watermark")
@@ -97,10 +98,9 @@ func getFormat(file *os.File) string {
       draw.Draw(m, ib, targetImage, image.ZP, draw.Src)
       draw.Draw(m, rgba.Bounds().Add(offset),rgba, image.ZP, draw.Over)
 
-      finalWaterMarkedImage,_ := os.Create("watermarked_" + inputImage)
+      finalWaterMarkedImage,_ := os.Create("uploads/watermarked_" + inputImage)
       jpeg.Encode(finalWaterMarkedImage,m, &jpeg.Options{jpeg.DefaultQuality})
       defer finalWaterMarkedImage.Close()
 
-      return "watermarked_" + inputImage,nil
-}
-*/
+      return "uploads/watermarked_" + inputImage,nil
+    }

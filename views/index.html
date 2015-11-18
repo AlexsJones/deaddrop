@@ -35,6 +35,9 @@ function validateForm() {
         <h1 class="cover-heading">Silentdrop</h1>
         <h4 class="lead">Encrypted one time links for files that matter to you.</h4>
       </div>
+      <div class="checkbox">
+        <label><input id="watermarkcheck" type="checkbox" value="">Enable image watermarking</label>
+      </div>
       <form id="uploadform" method="POST" onsubmit="return validate_fileupload();" enctype="multipart/form-data">
         <div class="span12"> 
           <input name="file" id="fileu" type="file"></input>
@@ -42,9 +45,6 @@ function validateForm() {
           <br />
         </div>
       </form> 
-      <div class="checkbox">
-        <label><input id="watermarkcheck" type="checkbox" value="">Enable image watermarking</label>
-      </div>
 
       <h4 class="lead">Use a one time cipher to retrieve a file</h4>
 
@@ -65,7 +65,21 @@ function validateForm() {
 
 <script>
 
-$('#uploadform').attr('action','/deaddrop/upload/' + $('#watermarkcheck').is(':checked'))
+function checkWatermark() {
+
+  var path = '/deaddrop/upload/';
+
+  if($('#watermarkcheck').is(':checked')) {
+    path += 'true'
+  }else {
+    path +='false'
+  }
+  return path;
+};
+
+$('#watermarkcheck').click(function() {
+  $('#uploadform').attr('action',checkWatermark())
+});
 
 $("#fileu").fileinput({
 //  }

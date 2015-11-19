@@ -27,7 +27,7 @@ func hdeaddrop_upload(w http.ResponseWriter, r *http.Request) {
 
   params := mux.Vars(r)
   iswatermarked := params["iswatermarked"]
-  
+
   log.Println("Is watermarked => " + iswatermarked)
 
   if r.ContentLength == 0 {
@@ -73,17 +73,17 @@ func hdeaddrop_upload(w http.ResponseWriter, r *http.Request) {
   }
 
   defer out.Close()
-  
+
   if iswatermarked == "true" {
 
-    p ,_ := image.GenerateWaterMark( filenameCipher, 
+    p , err := image.GenerateWaterMark( filenameCipher, 
     hashedGuid)
 
-    os.Remove("uploads/" + filenameCipher)
-
-    os.Rename(p, "uploads/" + filenameCipher)
+    if err == nil { 
+      os.Remove("uploads/" + filenameCipher)
+      os.Rename(p, "uploads/" + filenameCipher)
+    }
   }
-
   utils.EncryptContent("uploads/"+filenameCipher, cryptoKey)
 
   http.Redirect(w, r, "/code/"+hashedGuid, http.StatusFound)
